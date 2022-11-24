@@ -1,2 +1,2 @@
 # Grafos
-En este repositorio se almacenan TAD de Grafos.
+En este repositorio se almacenan TAD de Grafos en C++.
