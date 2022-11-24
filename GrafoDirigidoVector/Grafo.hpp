@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 using namespace std;
 
@@ -11,7 +11,7 @@ class Grafo
 private:
     // Vector de pares que incluye un par de informacion y sucesores: posSucesor, costo
     vector<pair<info, vector<pair<int, int>>>> grafo;
-    map<int, bool> visitados;
+    unordered_map<int, bool> visitados;
 
 public:
     // Constructoras
@@ -20,6 +20,7 @@ public:
     // Modificadoras
     void insVertice(info informacion);
     void insArco(int posVertice, int posSucesor, int costo);
+    void elimVertice(int posVertice);
     void elimArco(int posVertice, int posSucesor);
     void marcarVertice(int posVertice);
     void desmarcarVertice(int posVertice);
@@ -33,6 +34,8 @@ public:
     int ordenGrafo();
     bool marcadoVertice(int posVertice);
     void imprimirGrafo();
+    bool hayCamino1(int posVertice1, int posVertice2);
+    bool hayCamino2(int posVertice1, int posVertice2);
 
     // Destructora
     ~Grafo();
