@@ -180,8 +180,8 @@ int Grafo<info>::costoArco(int posVertice, int posSucesor)
             for (it = this->grafo[posVertice].second.begin(); it != this->grafo[posVertice].second.end(); it++)
                 if (it->first == posSucesor)
                 {
-                    return it->second;
                     encontrado = true;
+                    return it->second;
                     break;
                 }
 
@@ -320,7 +320,9 @@ bool Grafo<info>::hayCamino2(int posVertice1, int posVertice2)
 {
     if (posVertice1 < this->grafo.size())
         if (posVertice2 < this->grafo.size())
-            if ((posVertice1 == posVertice2) || (costoArco(posVertice1, posVertice2) != -1))
+        {
+            int costo = costoArco(posVertice1, posVertice2);
+            if ((posVertice1 == posVertice2) || (costo != -1))
                 return true;
             else
             {
@@ -328,16 +330,113 @@ bool Grafo<info>::hayCamino2(int posVertice1, int posVertice2)
                 marcarVertice(posVertice1);
 
                 for (int i = 0; i < suc.size(); i++)
-                    if (!marcadoVertice(suc[i]) && hayCamino2(suc[i], posVertice2))
-                    {
-                        suc.~vector();
+                    if ((marcadoVertice(suc[i]) == false) && (hayCamino2(suc[i], posVertice2) == true))
                         return true;
-                    }
                 return false;
             }
+        }
         else
             cout << "El vertice en la posicion " << posVertice2 << " no existe." << endl;
     else
         cout << "El vertice en la posicion " << posVertice1 << " no existe." << endl;
     return false;
+}
+
+/// @brief Calcular y retornar el costo del camino mínimo entre dos vértices v1 y v2 de un grafo dirigido, teniendo en cuenta que el grafo puede tener ciclos.
+/// @tparam info
+/// @param posVertice1
+/// @param posVertice2
+/// @return
+template <class info>
+int Grafo<info>::costoMinimo1(int posVertice1, int posVertice2)
+{
+    if (posVertice1 < this->grafo.size())
+    {
+        if (posVertice2 < this->grafo.size())
+        {
+            if (posVertice1 == posVertice2)
+                return 0;
+            else
+            {
+                int temporal = 0, menor = -1;
+                vector<int> suc = sucesores(posVertice1);
+                marcarVertice(posVertice1);
+
+                for (int i = 0; i < suc.size(); i++)
+                    if ((marcadoVertice(suc[i]) == false) && ((temporal = costoMinimo1(suc[i], posVertice2)) != -1))
+                        if (menor == -1)
+                            menor = (temporal + costoArco(posVertice1, suc[i]));
+                        else
+                            menor = min(menor, (temporal + costoArco(posVertice1, suc[i])));
+                desmarcarVertice(posVertice1);
+                return menor;
+            }
+        }
+        else
+            cout << "El vertice en la posicion " << posVertice2 << " no existe." << endl;
+    }
+    else
+        cout << "El vertice en la posicion " << posVertice1 << " no existe." << endl;
+    return -1;
+}
+
+template <class info>
+vector<int> Grafo<info>::costoMinimo2(int posVertice1, int posVertice2, int costo)
+{
+    vector<int> respuesta2;
+    if (posVertice1 < this->grafo.size())
+    {
+        if (posVertice2 < this->grafo.size())
+        {
+            vector<int> respuesta1;
+            if (posVertice1 == posVertice2)
+            {
+                costo = 0;
+                respuesta2.push_back(posVertice1);
+                return respuesta2;
+            }
+            else
+            {
+                int menor = -1;
+                vector<int> suc = sucesores(posVertice1);
+                marcarVertice(posVertice1);
+                for (int i = 0; i < suc.size(); i++)
+                {
+                    if (marcadoVertice(suc[i]) == false)
+                    {
+                        respuesta1 = costoMinimo2(suc[i], posVertice1, costo);
+                        if (costo != -1)
+                        {
+                            costo += costoArco(posVertice1, suc[i]);
+                            if ((menor == -1) || (costo < menor))
+                            {
+                                menor = costo;
+                                respuesta2 = respuesta1;
+                            }
+                        }
+                    }
+                }
+                desmarcarVertice(posVertice1);
+                costo = menor;
+                if (costo != -1)
+                    respuesta2.push_back(posVertice1);
+                return respuesta2;
+            }
+        }
+        else
+            cout << "El vertice en la posicion " << posVertice2 << " no existe." << endl;
+    }
+    else
+        cout << "El vertice en la posicion " << posVertice1 << " no existe." << endl;
+    return respuesta2;
+}
+
+template <class info>
+vector<int> Grafo<info>::sumideros()
+{
+    vector<int> respuesta;
+    for (int i = 0; i < ordenGrafo(); i++)
+        if (sucesores(i).size() == 0)
+            respuesta.push_back(i);
+    return respuesta;
 }

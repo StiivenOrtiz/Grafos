@@ -36,6 +36,9 @@ public:
     void imprimirGrafo();
     bool hayCamino1(int posVertice1, int posVertice2);
     bool hayCamino2(int posVertice1, int posVertice2);
+    int costoMinimo1(int posVertice1, int posVertice2);
+    vector<int> costoMinimo2(int posVertice1, int posVertice2, int costo);
+    vector<int> sumideros();
 
     // Destructora
     ~Grafo();
